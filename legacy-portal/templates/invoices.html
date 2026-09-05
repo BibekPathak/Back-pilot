@@ -17,28 +17,28 @@
   <form method="post" action="/invoices" enctype="multipart/form-data">
     <table class="form">
       <tr>
-        <td class="lbl"><label>{{ labels.invoice_number }}:</label></td>
+        <td class="lbl"><label for="invoice_number">{{ labels.invoice_number }}:</label></td>
         <td><input type="text" name="invoice_number" id="invoice_number" size="20"></td>
       </tr>
       <tr>
-        <td class="lbl"><label>{{ labels.vendor }}:</label></td>
+        <td class="lbl"><label for="vendor">{{ labels.vendor }}:</label></td>
         <td><input type="text" name="vendor" id="vendor" size="20"></td>
       </tr>
       <tr>
-        <td class="lbl"><label>{{ labels.amount }}:</label></td>
+        <td class="lbl"><label for="amount">{{ labels.amount }}:</label></td>
         <td><input type="text" name="amount" id="amount" size="20"></td>
       </tr>
       <tr>
-        <td class="lbl"><label>{{ labels.invoice_date }}:</label></td>
+        <td class="lbl"><label for="invoice_date">{{ labels.invoice_date }}:</label></td>
         <td><input type="text" name="invoice_date" id="invoice_date" size="20" placeholder="YYYY-MM-DD"></td>
       </tr>
       <tr>
-        <td class="lbl"><label>Document:</label></td>
+        <td class="lbl"><label for="document">Document:</label></td>
         <td><input type="file" name="document" id="document" accept=".pdf"></td>
       </tr>
       {% if captcha %}
       <tr>
-        <td class="lbl"><label>CAPTCHA:</label></td>
+        <td class="lbl"><label for="captcha_answer">CAPTCHA:</label></td>
         <td>
           <span class="captcha" id="captcha">3 + 4 = ?</span><br>
           <input type="text" name="captcha_answer" id="captcha_answer" size="10">

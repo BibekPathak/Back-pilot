@@ -14,11 +14,11 @@
 
   <form method="post" action="/login">
     <table class="form">
-      <tr><td class="lbl">Username:</td><td><input type="text" name="username" id="username" size="20"></td></tr>
-      <tr><td class="lbl">Password:</td><td><input type="password" name="password" id="password" size="20"></td></tr>
+      <tr><td class="lbl"><label for="username">Username:</label></td><td><input type="text" name="username" id="username" size="20"></td></tr>
+      <tr><td class="lbl"><label for="password">Password:</label></td><td><input type="password" name="password" id="password" size="20"></td></tr>
     </table>
     <br>
-    <input type="submit" value="LOGIN">
+    <input type="submit" value="LOGIN" id="submit">
   </form>
 
   <p class="hint">Default credentials: admin / admin</p>
