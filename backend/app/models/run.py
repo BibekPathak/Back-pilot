@@ -68,6 +68,9 @@ class Run(Base):
     events: Mapped[list["Event"]] = relationship(
         back_populates="run", cascade="all, delete-orphan", order_by="Event.seq"
     )
+    interventions: Mapped[list["Intervention"]] = relationship(  # type: ignore[name-defined]
+        back_populates="run", cascade="all, delete-orphan"
+    )
 
 
 class Event(Base):

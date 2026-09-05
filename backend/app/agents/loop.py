@@ -30,6 +30,7 @@ from app.browser.actions import (
 from app.browser.executor import BrowserExecutor, BrowserError
 from app.browser.observation import PageObservation
 from app.browser.validator import ActionValidationError, ActionValidator
+from app.recovery.engine import RecoveryEngine, RecoveryStrategy
 from app.workflows.engine import EventRecord, RunResult
 from app.workflows.state_machine import StateMachine
 
@@ -51,6 +52,7 @@ class AgentLoop:
     task: str = ""
     max_steps: int = 100
     max_retries: int = 3
+    max_recovery_attempts: int = 2
     validator: Optional[ActionValidator] = None
 
     def __post_init__(self):
@@ -63,6 +65,13 @@ class AgentLoop:
         self._events: list[EventRecord] = []
         self._seq = 0
         self._retries = 0
+        self._recovery_engine = RecoveryEngine(
+            executor=self.executor,
+            max_refresh_attempts=self.max_recovery_attempts,
+            max_reauth_attempts=self.max_recovery_attempts,
+            max_modal_dismiss_attempts=self.max_recovery_attempts,
+            max_back_attempts=self.max_recovery_attempts,
+        )
 
     # ------------------------------------------------------------------ events
     def _record(self, kind: str, **kwargs) -> EventRecord:
@@ -218,26 +227,35 @@ class AgentLoop:
                     failure_reason=exc.failure_reason,
                     duration_ms=dt,
                 )
-                self._retries += 1
 
-                # Check if we should recover or give up.
-                if exc.failure_reason == "captcha_detected":
-                    self._state.captcha_detected = True
-                    self._force_state("HUMAN_INTERVENTION")
-                    break
-                if exc.failure_reason == "session_expired":
-                    self._state.session_expired = True
-                if self._retries > self.max_retries:
-                    self._record(
-                        "recovery", detail="exhausted retries, failing"
-                    )
-                    self._force_state("FAILED")
-                    break
+                # Use the recovery engine for structured recovery.
+                recovery_result = await self._recovery_engine.recover(
+                    observation, failure_reason=exc.failure_reason
+                )
+
                 self._record(
                     "recovery",
-                    detail=f"retry {self._retries}/{self.max_retries}",
+                    detail=f"strategy={recovery_result.strategy.value} "
+                    f"success={recovery_result.success} "
+                    f"message={recovery_result.message}",
                 )
-                await self.executor.wait(300)
+
+                if recovery_result.strategy == RecoveryStrategy.ESCALATE:
+                    if exc.failure_reason == "captcha_detected":
+                        self._state.captcha_detected = True
+                    self._force_state("HUMAN_INTERVENTION")
+                    break
+
+                if recovery_result.success and recovery_result.observation:
+                    observation = recovery_result.observation
+                    self._retries = 0
+                    continue
+
+                # Recovery failed — escalate.
+                self._retries += 1
+                if self._retries > self.max_retries:
+                    self._force_state("FAILED")
+                    break
 
             except Exception as exc:
                 dt = int((time.monotonic() - t_start) * 1000)

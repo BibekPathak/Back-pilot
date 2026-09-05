@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.db.session import Base, engine
 from app.models import run as _run_models  # noqa: F401  (register models)
+from app.models import intervention as _intervention_models  # noqa: F401  (register models)
 
 
 @asynccontextmanager
@@ -40,5 +41,9 @@ def health():
 
 # API routers are wired in as milestones land:
 from app.api.runs import router as runs_router  # noqa: E402
+from app.api.human import router as human_router  # noqa: E402
+from app.api.dashboard import router as dashboard_router  # noqa: E402
 
 app.include_router(runs_router, prefix="/api")
+app.include_router(human_router, prefix="/api")
+app.include_router(dashboard_router, prefix="/api")
