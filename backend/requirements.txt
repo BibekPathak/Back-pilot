@@ -1,0 +1,24 @@
+# Web / API
+fastapi==0.115.*
+uvicorn[standard]==0.30.*
+pydantic==2.*
+pydantic-settings==2.*
+
+# Database
+SQLAlchemy==2.0.*
+psycopg2-binary==2.9.*
+alembic==1.13.*
+
+# Redis / workers
+redis==5.*
+celery==5.4.*
+
+# Browser automation
+playwright==1.48.*
+
+# LLM planner
+openai==1.*
+httpx==0.27.*
+
+# PDF extraction (simple text layer for invoices)
+pypdf==5.*

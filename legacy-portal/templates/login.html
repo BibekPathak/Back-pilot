@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<center>
+  <h3>System Login</h3>
+
+  {% if error == "session-expired" %}
+  <table class="errorbox"><tr><td>
+    <b>! SESSION EXPIRED !</b><br>
+    Your session has timed out. Please log in again to continue your work.
+  </td></tr></table>
+  {% elif error %}
+  <table class="errorbox"><tr><td><b>Error:</b> {{ error }}</td></tr></table>
+  {% endif %}
+
+  <form method="post" action="/login">
+    <table class="form">
+      <tr><td class="lbl">Username:</td><td><input type="text" name="username" id="username" size="20"></td></tr>
+      <tr><td class="lbl">Password:</td><td><input type="password" name="password" id="password" size="20"></td></tr>
+    </table>
+    <br>
+    <input type="submit" value="LOGIN">
+  </form>
+
+  <p class="hint">Default credentials: admin / admin</p>
+</center>
+{% endblock %}

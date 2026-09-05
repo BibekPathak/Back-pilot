@@ -1,0 +1,79 @@
+name: backpilot
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-backpilot}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-backpilot}
+      POSTGRES_DB: ${POSTGRES_DB:-backpilot}
+    ports:
+      - "${POSTGRES_PORT:-5433}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-backpilot}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "${REDIS_PORT:-6380}:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  legacy-portal:
+    build: ./legacy-portal
+    environment:
+      PORT: 8081
+      PORTAL_FAILURE_MODE: ${PORTAL_FAILURE_MODE:-NORMAL}
+      PORTAL_FAILURE_SEQUENCE: ${PORTAL_FAILURE_SEQUENCE:-}
+      PORTAL_RANDOM_SEED: ${PORTAL_RANDOM_SEED:-42}
+    ports:
+      - "${LEGACY_PORTAL_PORT:-8081}:8081"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request;urllib.request.urlopen('http://localhost:8081/health')"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./backend
+    environment:
+      DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER:-backpilot}:${POSTGRES_PASSWORD:-backpilot}@postgres:5432/${POSTGRES_DB:-backpilot}
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+      LEGACY_PORTAL_URL: http://legacy-portal:8081
+      DASHBOARD_BASE_URL: ${DASHBOARD_BASE_URL:-http://localhost:3001}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL:-https://litellm.dev1.smarbl.com/v1}
+      OPENAI_MODEL: ${OPENAI_MODEL:-Deepseek-V4-Flash}
+      ALLOWED_DOMAINS: ${ALLOWED_DOMAINS:-localhost,legacy-portal}
+      PORTAL_FAILURE_MODE: ${PORTAL_FAILURE_MODE:-NORMAL}
+      PORTAL_FAILURE_SEQUENCE: ${PORTAL_FAILURE_SEQUENCE:-}
+    ports:
+      - "${BACKEND_PORT:-8002}:8002"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      legacy-portal:
+        condition: service_healthy
+
+  # frontend (React + TS dashboard) lands in a later milestone.
+  # frontend:
+  #   build: ./frontend
+  #   ports:
+  #     - "${FRONTEND_PORT:-3001}:3001"
+  #   depends_on:
+  #     - backend
+
+volumes:
+  postgres_data:

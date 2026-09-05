@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block content %}
+<center>
+  <h3>Invoice Processing</h3>
+
+  {% if error %}
+  <table class="errorbox"><tr><td><b>Error:</b> {{ error }}</td></tr></table>
+  {% endif %}
+
+  {% if captcha %}
+  <table class="warnbox"><tr><td>
+    <b>SECURITY VERIFICATION</b><br>
+    Please solve the CAPTCHA to continue. (Simulated: the answer is always <b>7</b>.)
+  </td></tr></table>
+  {% endif %}
+
+  <form method="post" action="/invoices" enctype="multipart/form-data">
+    <table class="form">
+      <tr>
+        <td class="lbl"><label>{{ labels.invoice_number }}:</label></td>
+        <td><input type="text" name="invoice_number" id="invoice_number" size="20"></td>
+      </tr>
+      <tr>
+        <td class="lbl"><label>{{ labels.vendor }}:</label></td>
+        <td><input type="text" name="vendor" id="vendor" size="20"></td>
+      </tr>
+      <tr>
+        <td class="lbl"><label>{{ labels.amount }}:</label></td>
+        <td><input type="text" name="amount" id="amount" size="20"></td>
+      </tr>
+      <tr>
+        <td class="lbl"><label>{{ labels.invoice_date }}:</label></td>
+        <td><input type="text" name="invoice_date" id="invoice_date" size="20" placeholder="YYYY-MM-DD"></td>
+      </tr>
+      <tr>
+        <td class="lbl"><label>Document:</label></td>
+        <td><input type="file" name="document" id="document" accept=".pdf"></td>
+      </tr>
+      {% if captcha %}
+      <tr>
+        <td class="lbl"><label>CAPTCHA:</label></td>
+        <td>
+          <span class="captcha" id="captcha">3 + 4 = ?</span><br>
+          <input type="text" name="captcha_answer" id="captcha_answer" size="10">
+        </td>
+      </tr>
+      {% endif %}
+    </table>
+    <br>
+    {% if missing_submit %}
+    <p class="warn">(submit control temporarily unavailable — please wait)</p>
+    {% else %}
+    <input type="submit" id="submit" value="SAVE &amp; CONTINUE">
+    {% endif %}
+  </form>
+
+  {% if modal %}
+  <table class="modal-backdrop" id="modal">
+    <tr><td>
+      <table class="modal-box">
+        <tr><td><b>!! UNEXPECTED SYSTEM MESSAGE !!</b></td></tr>
+        <tr><td>An unidentified system error has occurred. Please acknowledge to continue.</td></tr>
+        <tr><td><center><button id="modal-ack" onclick="document.getElementById('modal').style.display='none'">OK</button></center></td></tr>
+      </table>
+    </td></tr>
+  </table>
+  {% endif %}
+</center>
+{% endblock %}

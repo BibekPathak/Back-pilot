@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<center>
+  <h3>Welcome, {{ user }}!</h3>
+  <p>You are logged into the ACME Enterprise Resource Portal.</p>
+
+  {% if submitted %}
+  <table class="okbox"><tr><td><b>Last invoice was processed successfully.</b></td></tr></table>
+  {% endif %}
+
+  <table class="form">
+    <tr><th colspan="2">Quick Actions</th></tr>
+    <tr><td><a href="/invoices">Process Invoice</a></td><td>Create and submit a new invoice.</td></tr>
+    <tr><td><a href="#">Browse Documents</a></td><td>View uploaded documents.</td></tr>
+    <tr><td><a href="#">Reports</a></td><td>Run month-end reports.</td></tr>
+  </table>
+</center>
+{% endblock %}

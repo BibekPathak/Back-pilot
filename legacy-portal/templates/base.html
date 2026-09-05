@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>{% block title %}ACME ENTERPRISE RESOURCE PORTAL{% endblock %}</title>
+  <link rel="stylesheet" href="/static/site.css">
+</head>
+<body>
+  <table class="page-frame">
+    <tr><td>
+      <center>
+        <h1 id="acme-banner">★ ACME ENTERPRISE RESOURCE PORTAL ★</h1>
+        <marquee behavior="alternate" scrollamount="3" id="ticker">
+          Welcome to ACME Enterprise Resource Portal v3.2.1 ... Do not forget to SAVE your work ... Your files are precious ...
+        </marquee>
+      </center>
+
+      {% block nav %}
+      <center>
+        <table class="navbar">
+          <tr>
+            <td><a href="/dashboard">[Dashboard]</a></td>
+            <td><a href="/invoices">[Invoices]</a></td>
+            <td><a href="#">[Documents]</a></td>
+            <td><a href="#">[Reports]</a></td>
+            <td><a href="/logout">[Logout]</a></td>
+          </tr>
+        </table>
+      </center>
+      {% endblock %}
+
+      <hr class="rule">
+
+      {% block content %}{% endblock %}
+
+      <hr class="rule">
+      <center class="footer">
+        <small>
+          &copy; 1998 ACME Corporation. Best viewed in Internet Explorer 5.0 at 800x600.<br>
+          System time: <span id="clock">{{ now }}</span>
+        </small>
+      </center>
+    </td></tr>
+  </table>
+  <noscript><center class="warn">Warning: JavaScript is disabled. Some features may not work.</center></noscript>
+</body>
+</html>
