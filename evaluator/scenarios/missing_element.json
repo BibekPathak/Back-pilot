@@ -1,0 +1,16 @@
+{
+  "name": "missing_element",
+  "description": "Submit button is removed from the page. Agent should detect and escalate.",
+  "portal_failure_mode": "MISSING_ELEMENT",
+  "portal_failure_sequence": [],
+  "task": "Log in to the ACME ERP portal, fill in invoice INV-29381 for vendor ACME Corp with amount 1250.00, upload the invoice PDF, and submit.",
+  "expected_state": "HUMAN_INTERVENTION",
+  "expected_recovery": false,
+  "expected_human_intervention": true,
+  "scoring": {
+    "task_completion": 0.5,
+    "recovery_quality": 0.0,
+    "escalation_correctness": 1.0,
+    "efficiency": "steps <= 30"
+  }
+}

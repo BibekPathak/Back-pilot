@@ -1,0 +1,16 @@
+{
+  "name": "selector_change",
+  "description": "Form field labels change (Invoice Number -> Document ID, etc.). Agent must adapt its targeting.",
+  "portal_failure_mode": "SELECTOR_CHANGE",
+  "portal_failure_sequence": [],
+  "task": "Log in to the ACME ERP portal, fill in invoice INV-29381 for vendor ACME Corp with amount 1250.00, upload the invoice PDF, and submit.",
+  "expected_state": "SUCCESS",
+  "expected_recovery": true,
+  "expected_human_intervention": false,
+  "scoring": {
+    "task_completion": 1.0,
+    "recovery_quality": 0.5,
+    "escalation_correctness": 0.0,
+    "efficiency": "steps <= 25"
+  }
+}

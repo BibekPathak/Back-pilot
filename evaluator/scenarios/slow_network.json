@@ -1,0 +1,16 @@
+{
+  "name": "slow_network",
+  "description": "3-second delay on login POST. Agent should wait and retry.",
+  "portal_failure_mode": "SLOW_NETWORK",
+  "portal_failure_sequence": [],
+  "task": "Log in to the ACME ERP portal, fill in invoice INV-29381 for vendor ACME Corp with amount 1250.00, upload the invoice PDF, and submit.",
+  "expected_state": "SUCCESS",
+  "expected_recovery": true,
+  "expected_human_intervention": false,
+  "scoring": {
+    "task_completion": 1.0,
+    "recovery_quality": 0.3,
+    "escalation_correctness": 0.0,
+    "efficiency": "steps <= 20"
+  }
+}
