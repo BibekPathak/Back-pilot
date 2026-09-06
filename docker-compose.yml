@@ -67,13 +67,12 @@ services:
       legacy-portal:
         condition: service_healthy
 
-  # frontend (React + TS dashboard) lands in a later milestone.
-  # frontend:
-  #   build: ./frontend
-  #   ports:
-  #     - "${FRONTEND_PORT:-3001}:3001"
-  #   depends_on:
-  #     - backend
+  frontend:
+    build: ./frontend
+    ports:
+      - "${FRONTEND_PORT:-3001}:3001"
+    depends_on:
+      - backend
 
 volumes:
   postgres_data:

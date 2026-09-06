@@ -1,4 +1,4 @@
-.PHONY: setup dev test evaluate portal backend up down logs format
+.PHONY: setup dev test evaluate portal backend frontend up down logs format
 
 # Copy env if missing
 setup:
@@ -28,6 +28,10 @@ test:
 evaluate:
 	docker compose up -d postgres redis legacy-portal backend
 	python3 -m evaluator.runner
+
+# Frontend dev server (requires npm)
+frontend:
+	cd frontend && npm run dev
 
 format:
 	@echo "Linting target (ruff)."

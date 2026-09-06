@@ -6,10 +6,10 @@ BackPilot is a computer-use back-office agent that operates legacy web portals,
 recovers from broken UI assumptions, and hands control to a human when
 automation encounters CAPTCHA or ambiguity.
 
-> Status: **Milestone 1** — legacy ERP portal simulator, failure-injection system,
-> and the backend/database skeleton are implemented and verified.
+> Status: **Milestone 8** — full stack with frontend dashboard, evaluator,
+> recovery engine, and human-takeover workflow.
 
-## Quick start (Milestone 1 scope)
+## Quick start
 
 ```bash
 cp .env.example .env
@@ -18,6 +18,7 @@ docker compose up -d --build
 
 | Service | URL |
 | --- | --- |
+| Frontend Dashboard | http://localhost:3001 |
 | Legacy ERP portal | http://localhost:8081 |
 | Backend API | http://localhost:8002/api |
 | Postgres | localhost:5433 |
@@ -30,5 +31,12 @@ pip install -r backend/requirements-dev.txt
 pytest backend/tests
 ```
 
-The full README (architecture, demo, evaluation, replay) lands as features are
-completed in later milestones.
+## Evaluation
+
+```bash
+make evaluate
+```
+
+Runs all failure scenarios (happy_path, selector_change, slow_network,
+missing_element, unexpected_modal, session_expired, upload_failure, captcha)
+and scores the agent's performance.
