@@ -59,6 +59,13 @@ services:
       PORTAL_FAILURE_SEQUENCE: ${PORTAL_FAILURE_SEQUENCE:-}
     ports:
       - "${BACKEND_PORT:-8002}:8002"
+    volumes:
+      - screenshots:/app/screenshots
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8002/api/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     depends_on:
       postgres:
         condition: service_healthy
@@ -71,8 +78,37 @@ services:
     build: ./frontend
     ports:
       - "${FRONTEND_PORT:-3001}:3001"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3001"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
     depends_on:
       - backend
 
+  worker:
+    build: ./backend
+    command: celery -A app.workers worker --loglevel=info --concurrency=2
+    environment:
+      DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER:-backpilot}:${POSTGRES_PASSWORD:-backpilot}@postgres:5432/${POSTGRES_DB:-backpilot}
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+      LEGACY_PORTAL_URL: http://legacy-portal:8081
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL:-https://litellm.dev1.smarbl.com/v1}
+      OPENAI_MODEL: ${OPENAI_MODEL:-Deepseek-V4-Flash}
+      ALLOWED_DOMAINS: ${ALLOWED_DOMAINS:-localhost,legacy-portal}
+      PORTAL_FAILURE_MODE: ${PORTAL_FAILURE_MODE:-NORMAL}
+      PORTAL_FAILURE_SEQUENCE: ${PORTAL_FAILURE_SEQUENCE:-}
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      legacy-portal:
+        condition: service_healthy
+
 volumes:
   postgres_data:
+  screenshots:
